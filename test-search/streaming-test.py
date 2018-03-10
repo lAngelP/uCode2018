@@ -69,4 +69,4 @@ if __name__ == "__main__":
         myStreamListener = MyStreamListener()
 
         myStream = tweepy.Stream(auth=api.auth, listener=myStreamListener)
-        myStream.filter(track=['#FelizFinde'])
+        myStream.filter(track=['#DinnerWithSuho'])
