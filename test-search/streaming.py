@@ -1,11 +1,9 @@
 import tweepy
-
-data = None
-
+from time import time, sleep
 
 class StreamData:
-
-    def __init__(self, url, posted_at, username, displayname, text, fav, rt):
+    def __init__(self, id_tweet, url, posted_at, username, displayname, text, fav, rt):
+        self.id = id_tweet
         self.url = url
         self.posted_at = posted_at
         self.username = username
@@ -14,25 +12,32 @@ class StreamData:
         self.fav = fav
         self.rt = rt
 
+    def __str__(self):
+        "Usuario: "+self.username+"\n"+ \
+        "Posted_at"+self.posted_at+"\n"+ \
+        "Url :"+self.url+"\n"+ \
+        "Display: "+self.displayname
 
 # override tweepy.StreamListener to add logic to on_status
 class MyStreamListener(tweepy.StreamListener):
-
     def __init__(self):
         super().__init__()
 
     def on_status(self, status):
-        global data
-        print("Received new")
+        global tfinal
+        global myStream
         if status.text[0:2] != "RT":
-            print("Received new not RT")
-            with open("../website/test.txt", "w") as f:
+            print("Received Tweet")
+            with open("../website/data/test.txt", "w") as f:
                 f.write(str(status.user.screen_name)+","+str(status.id))
-            data = StreamData(status.user.profile_image_url, status.created_at, status.user.screen_name,
-                              status.user.name, status.text, status.favorite_count, status.retweet_count)
+            
+        else:
+            print("Received Retweet")
+        #print(time()-tfinal)
+        if time()>tfinal:
+            myStream.disconnect()
 
     def on_error(self, status_code):
-        global data
         print("Error ", status_code)
         data = None
         if status_code == 420:
@@ -46,7 +51,12 @@ def get_auth(i, keys):
     return [i + 1, tweepy.API(auth)]
 
 
-if __name__ == "__main__":
+def start_streaming(hashtag, nombre, equipos, fecha, lugar, tinicio, duracion):
+    global tfinal
+    global myStream
+    print("esperando "+ str(tinicio-time())+" segundos")
+    #Esperar tiempo de inicio
+    sleep(tinicio-time())
     keys = [{"consumer_key": 'nRg8SIso25KTnYE0Yn1tec2zb',  # Jorpilo
              "consumer_secret": 's26emswOPnExmaYjhgRUwKzRo84HnISBWJbCm4zUPbAnDJoIzZ',
              "access_token": '2510636970-HjkdkkXeT7syJ0pZ9xPbr3kILTF3sUaq7l5JU4I',
@@ -63,10 +73,12 @@ if __name__ == "__main__":
              "access_token_secret": '4qfXmFZhlyYFDzpwIHBstTRpVt7O7hBPI2jUCjTnLc9M8'}]
 
     i = 1
-
-    while True:
+    print("Comenzando")
+    tfinal = tinicio+duracion
+    while time()<tinicio+duracion:
         [i, api] = get_auth(i, keys)
         myStreamListener = MyStreamListener()
 
         myStream = tweepy.Stream(auth=api.auth, listener=myStreamListener)
-        myStream.filter(track=['#DinnerWithSuho'])
+        myStream.filter(track=[hashtag])
+        print(tinicio+duracion-time())
