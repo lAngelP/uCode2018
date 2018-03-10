@@ -1,11 +1,12 @@
 from TwitterSearch import *
 import json
+from time import sleep
 
 import requests
 def generate_hashtags(baselist):
     url= "http://d212rkvo8t62el.cloudfront.net/tag/"
     for base in baselist:
-        one = baselist[base][1:]
+        one = baselist[base][0][1:]
         resp= requests.get(url=url+one)
         data= resp.json()
         baselist[base] = ['#'+hashtag['tag'] for hashtag in data['results']][:4]
@@ -24,26 +25,26 @@ def get_auth():
     return ts
 
 
-def limit_handled(query):
-    global errors
-    global api
+def limit_handled(query, api, errors):
+    global keys
 
     try:
         tso = TwitterSearchOrder()
         tso.set_keywords(query, or_operator=True)
-        errors = 0
-        return api.search_tweets_iterable(tso)
+        return [errors, api, api.search_tweets_iterable(tso)]
     except TwitterSearchException as e:
         if e.code == 429:
             print("API cooldown")
             errors += 1
-            api = get_auth()
 
             if errors == len(keys):
                 print("MAX SHUTDOWN: Waiting 1 minute and retrying...")
                 sleep(60)
 
-        return None
+            errors %= len(keys)
+            api = get_auth()
+
+        return [errors, api, None]
 
 
 def compileHash(hashlist):
@@ -51,6 +52,9 @@ def compileHash(hashlist):
 
 
 if __name__ == "__main__":
+    global api
+    global keys
+    global i
 
     keys = [{"consumer_key": 'nRg8SIso25KTnYE0Yn1tec2zb',  # Jorpilo
              "consumer_secret": 's26emswOPnExmaYjhgRUwKzRo84HnISBWJbCm4zUPbAnDJoIzZ',
@@ -60,28 +64,57 @@ if __name__ == "__main__":
             {"consumer_key": 'bjQ8FIJmBc0cH6sIzHEJBZfTB',  # lAngelP 1
              "consumer_secret": '59fdyTZu8j12IPb3hQvabyu9pe1dqtBlLaD2S1yBkHjCFXgZYw',
              "access_token": '2274344732-eWTEjJO9eZQ2rzpWr9HeIWXflv2v2tKbgTcovk2',
-             "access_token_secret": 'XMxK5l0nz2Yjhv2XWH16eyfXhjfcZx3nUKp84cxbfZxV2'}]
+             "access_token_secret": 'XMxK5l0nz2Yjhv2XWH16eyfXhjfcZx3nUKp84cxbfZxV2'},
+
+            {"consumer_key": '',  # Giorgi
+             "consumer_secret": '',
+             "access_token": '',
+             "access_token_secret": ''}]
     i = 0
     api = get_auth()
     errors = 0
-    hashlist = generate_hashtags({'RealMadrid': ['#HalaMadrid'], 'Juventus': ['#ForzaJuve'],
-                'BayernMunich': ['#FCBayern'], 'ChicagoBulls': ['#BullsNation'],
-                'TorontoRaptors': ['#TeamToronto', '#RTZ']})
+    # hashlist = generate_hashtags({'ChicagoBulls': ['#BullsNation'],
+    #             'TorontoRaptors': ['#WeTheNorth'],
+    #             'NBA': ['#NBA'], 'Blazers': ['#RipCity'], 'Detroit': ['#DetroitBasketball'],
+    #             'Grizzlies': ['GrindCity'], 'Lakers': ['#LakeShow'], 'Sacramento': ['#SacramentoProud'],
+    #             'Bucks': ['#OwnTheFuture'], 'Philadelphia': ['#MADEinPHILA'], 'GSWarriors': ['#DubNation'],
+    #             'Charlotte': ['#BuzzCity'], 'DenverNuggets': ['#MileHighBasketball'], 'AtlantaHawks': ['#TrueToAtlanta'],
+    #             'DallasMavericks': ['#MFFL'], 'PhoenixSuns': ['#WeArePHX'], 'LAClippers': ['#ItTakesEverything'],
+    #             'MiamiHeats': ['#HEATisOn'], 'OrlandoMagic': ['#LetsGoMagic'], 'Celtics': ['#Celtics'],
+    #             'Rockets': ['#Rockets50'], 'Pacers': ['#GoPacers'], 'Pelicans': ['#Pelicans'], 'Knicks': ['#Knicks'],
+    #             'BrooklynNets': ['#BrooklynGrit'], 'UtahJazz': ['#TakeNote'], 'ClevelandCavaliers': ['#DefendTheLand'],
+    #             'WashingtonWizards': ['#DCFamily']})
+
+    hashlist = generate_hashtags({'Detroit': ['#DetroitBasketball'],
+                                  'Grizzlies': ['GrindCity'], 'Lakers': ['#LakeShow'],
+                                  'Sacramento': ['#SacramentoProud'],
+                                  'Bucks': ['#OwnTheFuture'], 'Philadelphia': ['#MADEinPHILA'],
+                                  'GSWarriors': ['#DubNation'],
+                                  'Charlotte': ['#BuzzCity'], 'DenverNuggets': ['#MileHighBasketball'],
+                                  'AtlantaHawks': ['#TrueToAtlanta'],
+                                  'DallasMavericks': ['#MFFL'], 'PhoenixSuns': ['#WeArePHX'],
+                                  'LAClippers': ['#ItTakesEverything'],
+                                  'MiamiHeats': ['#HEATisOn'], 'OrlandoMagic': ['#LetsGoMagic'],
+                                  'Celtics': ['#Celtics'],
+                                  'Rockets': ['#Rockets50'], 'Pacers': ['#GoPacers'], 'Pelicans': ['#Pelicans'],
+                                  'Knicks': ['#Knicks'],
+                                  'BrooklynNets': ['#BrooklynGrit'], 'UtahJazz': ['#TakeNote'],
+                                  'ClevelandCavaliers': ['#DefendTheLand'],
+                                  'WashingtonWizards': ['#DCFamily']})
+
     hashkeys = list(hashlist.keys())
 
     stats_retr = 0
 
-    while True:
-        for x in range(len(hashkeys)):
-            file = hashkeys[x]
-            h = hash[x]
-            with open("./data/" + file + ".json", "w") as f:
-                query_list = hashlist[file]
-                print("Perform " + " OR ".join(query_list))
-                raw_data = None
-                while raw_data is None:
-                    raw_data = limit_handled(query_list)
+    for x in range(len(hashkeys)):
+        file = hashkeys[x]
+        with open("./data/NBA/" + file + ".json", "w+") as f:
+            query_list = hashlist[file]
+            print("Perform " + " OR ".join(query_list))
+            raw_data = None
+            while raw_data is None:
+                [errors, api, raw_data] = limit_handled(query_list, api, errors)
 
-                data = [x for x in raw_data]
-                print("Retrieved " + str(len(data)) + " tweets for " + file)
-                json.dump(data, f)
+            data = [x for x in raw_data]
+            print("Retrieved " + str(len(data)) + " tweets for " + file)
+            json.dump(data, f)
