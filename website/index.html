@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Find your tweet</title>
-
-
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script type="application/javascript">
+        users = [];
+        index = 0;
         function readTextFile(file)
         {
             var rawFile = new XMLHttpRequest();
@@ -17,21 +18,52 @@
                     if(rawFile.status === 200 || rawFile.status === 0)
                     {
                         var allText = rawFile.responseText;
-                        document.getElementById("example").innerHTML=allText;
+                        var new_user = allText.split(",");
+                        index = appendUser(users, index, new_user);
                     }
                 }
             };
             rawFile.send(null);
         }
+        
+        function renderUsers(users, index) {
+            //var user = '';
+            //for(i = 0; i < Math.min(index, 5); i++) {
+            //    user = user + '<iframe border=0 frameborder=0 height=500 width=325 src="http://twitframe.com/show?url=https://twitter.com/'+users[i][0]+'/status/'+users[i][1]+'"></iframe>';
+            //}
+            user = '<iframe border=0 frameborder=0 height=500 width=100% src="http://twitframe.com/show?url=https://twitter.com/'+users[(index-1)%5][0]+'/status/'+users[(index-1)%5][1]+'"></iframe>';
+            document.getElementById('user'+(index%5)).innerHTML=user;
+        }
+
+        function appendUser(users, index, new_user) {
+            if(users.length == 0) {
+                users[0] = new_user;
+                index = index+1;
+                renderUsers(users, index);
+            }
+            else if(new_user[1] != users[(index-1)%5][1]) {
+                users[index%5] = new_user;
+                index = index+1;
+                renderUsers(users, index);
+            }
+            console.log(users);
+            return index;            
+        }     
 
         function config() {
-            var myVar = setInterval(function(){ readTextFile("test.txt"); }, 2000);
-        }
+            var myVar = setInterval(function(){ readTextFile("test.txt"); }, 10000);
+        }       
     </script>
 </head>
 <body onload="config()">
-    <div id="example"></div>
-    user,post
-    "<iframe border=0 frameborder=0 height=500 width=325 src="http://twitframe.com/show?url=https://twitter.com/Ruben288397261/status/972396377660706816"></iframe>
+    <div id="all_users" class="container-fluid">
+        <div class="row">
+            <div id="user0" class="col-md-offset-1 col-md-2"></div>
+            <div id="user1" class="col-md-2"></div>
+            <div id="user2" class="col-md-2"></div>
+            <div id="user3" class="col-md-2"></div>
+            <div id="user4" class="col-md-2 col-md-offset-1"></div>
+        </div>
+    </div>
 </body>
 </html>
