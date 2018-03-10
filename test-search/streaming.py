@@ -1,5 +1,5 @@
 import tweepy
-from time import time
+from time import time, sleep
 
 class StreamData:
     def __init__(self, id_tweet, url, posted_at, username, displayname, text, fav, rt):
@@ -24,7 +24,8 @@ class MyStreamListener(tweepy.StreamListener):
         super().__init__()
 
     def on_status(self, status):
-        #global data
+        global tfinal
+        global myStream
         if status.text[0:2] != "RT":
             print("Received Tweet")
             with open("../website/data/test.txt", "w") as f:
@@ -32,9 +33,11 @@ class MyStreamListener(tweepy.StreamListener):
             
         else:
             print("Received Retweet")
+        #print(time()-tfinal)
+        if time()>tfinal:
+            myStream.disconnect()
 
     def on_error(self, status_code):
-        #global data
         print("Error ", status_code)
         data = None
         if status_code == 420:
@@ -48,7 +51,12 @@ def get_auth(i, keys):
     return [i + 1, tweepy.API(auth)]
 
 
-if __name__ == "__main__":
+def start_streaming(hashtag, nombre, equipos, fecha, lugar, tinicio, duracion):
+    global tfinal
+    global myStream
+    print("esperando "+ str(tinicio-time())+" segundos")
+    #Esperar tiempo de inicio
+    sleep(tinicio-time())
     keys = [{"consumer_key": 'nRg8SIso25KTnYE0Yn1tec2zb',  # Jorpilo
              "consumer_secret": 's26emswOPnExmaYjhgRUwKzRo84HnISBWJbCm4zUPbAnDJoIzZ',
              "access_token": '2510636970-HjkdkkXeT7syJ0pZ9xPbr3kILTF3sUaq7l5JU4I',
@@ -65,10 +73,12 @@ if __name__ == "__main__":
              "access_token_secret": '4qfXmFZhlyYFDzpwIHBstTRpVt7O7hBPI2jUCjTnLc9M8'}]
 
     i = 1
-
-    while True:
+    print("Comenzando")
+    tfinal = tinicio+duracion
+    while time()<tinicio+duracion:
         [i, api] = get_auth(i, keys)
         myStreamListener = MyStreamListener()
 
         myStream = tweepy.Stream(auth=api.auth, listener=myStreamListener)
-        myStream.filter(track=['#DinnerWithSuho'])
+        myStream.filter(track=[hashtag])
+        print(tinicio+duracion-time())
