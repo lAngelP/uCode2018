@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Find your tweet</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <script type="application/javascript">
         users = [];
         index = 0;
@@ -32,7 +32,7 @@
             //    user = user + '<iframe border=0 frameborder=0 height=500 width=325 src="http://twitframe.com/show?url=https://twitter.com/'+users[i][0]+'/status/'+users[i][1]+'"></iframe>';
             //}
             user = '<iframe border=0 frameborder=0 height=500 width=100% src="http://twitframe.com/show?url=https://twitter.com/'+users[(index-1)%5][0]+'/status/'+users[(index-1)%5][1]+'"></iframe>';
-            document.getElementById('user'+(index%5)).innerHTML=user;
+            document.getElementById('user'+((index-1)%5)).innerHTML=user;
         }
 
         function appendUser(users, index, new_user) {
@@ -51,19 +51,38 @@
         }     
 
         function config() {
-            var myVar = setInterval(function(){ readTextFile("test.txt"); }, 10000);
+            var myVar = setInterval(function(){ readTextFile("data/test.txt"); }, 1000);
         }       
     </script>
+    <style>
+        body {background-color: powderblue;}
+        iframe {background-color: aliceblue;}
+    </style>
 </head>
 <body onload="config()">
     <div id="all_users" class="container-fluid">
         <div class="row">
-            <div id="user0" class="col-md-offset-1 col-md-2"></div>
+            <div id="col-md-12">
+                <img src="images/ucode.png" height="100" width="100">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h3 class="text-center">FIND YOUR TWEET</h3>
+            </div> 
+        </div>
+        <div class="row">
+            <div id="user0" class="offset-1 col-md-2"></div>
             <div id="user1" class="col-md-2"></div>
             <div id="user2" class="col-md-2"></div>
             <div id="user3" class="col-md-2"></div>
-            <div id="user4" class="col-md-2 col-md-offset-1"></div>
+            <div id="user4" class="col-md-2 offset-1"></div>
         </div>
+        <div class="row">
+                <div class="col-md-12">
+                    <h3 class="text-center">Twitea con #uCodebyAdidas</h3>
+                </div> 
+            </div>
     </div>
 </body>
 </html>
