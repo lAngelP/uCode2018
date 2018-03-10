@@ -38,12 +38,11 @@ def insertar_gusto(db, like, hashtags, persona_id):
     )
     return gusto_id
 
-def insertar_evento(db, event, persona_id, gusto_id,date, lugar_id):
+def insertar_evento(db, event, gusto_id,date, lugar_id):
 
     evento_id = db.eventos.find_one_and_update(
         {"name": event},
         {"$addToSet": {
-            'people': str(persona_id['_id']),
             'like': [str(gusto['_id']) for gusto in gusto_id]},
             "$set": {
                 "name": event,
@@ -56,11 +55,6 @@ def insertar_evento(db, event, persona_id, gusto_id,date, lugar_id):
         {"$addToSet": {
             "events": str(evento_id['_id'])}},
     )
-    db.personas.update(
-        {"_id": str(persona_id['_id'])},
-        {"$addToSet": {
-            "events": str(evento_id['_id'])}},
-    )
     for gusto in gusto_id:
         print(gusto)
         db.gustos.update(
@@ -70,14 +64,27 @@ def insertar_evento(db, event, persona_id, gusto_id,date, lugar_id):
         )
     return evento_id
 
+
+def add_persona_evento(db, persona_id, evento_id):
+    db.eventos.update(
+        {"_id": str(evento_id['_id'])},
+        {"$addToSet": {
+            'people': str(persona_id['_id'])}},
+        upsert=True)
+    
+    db.personas.update(
+        {"_id": str(persona_id['_id'])},
+        {"$addToSet": {
+            "events": str(evento_id['_id'])}},
+    )
+
+
 def add_imagen(db, img, gusto_id):
     gusto_id = db.gusto.update(
-        {"_id": gusto_id},
+        {"_id": str(gusto_id['_id'])},
         {"$addToSet": {
             'img': img}},
         upsert=True)
-def add_tweet_id(db,id):
-    db.twitter_id.insert_one({'tweet':id})
 
 if __name__ == "__main__":
     db = connect()
@@ -93,5 +100,4 @@ if __name__ == "__main__":
     hashtag = ['#hashtag', '#hash2']
     location, persona = insertPerson_Localization(db,location, nick, name)
     gusto = insertar_gusto(db, like, hashtag, persona)
-    insertar_evento(db,event,persona, [gusto] ,date, location)
-    add_tweet_id(db,id)
+    insertar_evento(db,event, [gusto] ,date, location)
