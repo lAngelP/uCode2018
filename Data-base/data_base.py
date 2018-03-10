@@ -65,8 +65,8 @@ def insertar_gusto(db, like, hashtags):
 def insertar_persona_gusto(db, gusto_id, persona_id, sentient):
     db.gustos.update(
         {"_id": gusto_id},
-        {"$addToSet": {
-            "people":{"$each": persona_id}}}
+        {"$push": {
+            "people": persona_id}}
     )
     result = db.personas.find_one({"_id": persona_id})
 
@@ -83,7 +83,7 @@ def insertar_evento(db, event, gusto_ids,date, lugar_id):
     evento_id = db.eventos.find_and_modify(
         {"name": event},
         {"$addToSet": {
-            'like': {"$each": gusto_ids}},
+            'like': {"$each": [gusto_ids]}},
             "$set": {
                 "name": event,
                 "date": date,
@@ -93,14 +93,14 @@ def insertar_evento(db, event, gusto_ids,date, lugar_id):
     db.localizacion.update(
         {"_id": lugar_id},
         {"$addToSet": {
-            "events": evento_id}},
+            "events": {"$each":[evento_id]}}},
     )
     for gusto in gusto_ids:
         #print(gusto)
         db.gustos.update(
             {"_id": gusto},
             {"$addToSet": {
-                "events": evento_id}},
+                "events": {"$each":[evento_id]}}},
         )
     return evento_id
 
@@ -108,13 +108,13 @@ def add_persona_evento(db, persona_id, evento_id):
     db.eventos.update(
         {"_id": evento_id},
         {"$addToSet": {
-            'people': persona_id}},
+            'people': {"$each":[persona_id]}}},
         upsert=True)
 
     db.personas.update(
         {"_id": persona_id},
         {"$addToSet": {
-            "events": evento_id}},
+            "events": {"$each":[evento_id]}}},
     )
 
 
@@ -122,7 +122,7 @@ def add_imagen(db, img, gusto_id):
     gusto_id = db.gusto.update(
         {"_id": str(gusto_id)},
         {"$addToSet": {
-            'img': img}},
+            'img': {"$each":[img]}}},
         upsert=True)
 
 
@@ -132,8 +132,7 @@ def load_data(path, db):
     like = data["team"].split('.')[0]
     print(like)
     for user in data["data"]:
-        lat = user["user"]["location"]["lat"]
-        long = user["user"]["location"]["long"]
+
         nick = user["user"]["name"]
         name = user["user"]["nick"]
         profile_img = user["user"]["profile_img"]
@@ -143,7 +142,9 @@ def load_data(path, db):
         sentient = user["sentient"]
         persona_id = insert_Persona(db, nick, name, profile_img, followers, friends)
         #print(persona_id)
-        if lat != {} and long != {}:
+        if user["user"]["location"] != {}:
+            lat = user["user"]["location"]["lat"]
+            long = user["user"]["location"]["long"]
             location_id = insert_Localizacion(db, lat, long)
             insert_Localizacion_persona(db, [location_id['_id']], persona_id['_id'])
 
