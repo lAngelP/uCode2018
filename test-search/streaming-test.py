@@ -1,33 +1,49 @@
 import tweepy
 
+data = None
+
+
+class StreamData:
+
+    def __init__(self, url, posted_at, username, displayname, text, fav, rt):
+        self.url = url
+        self.posted_at = posted_at
+        self.username = username
+        self.displayname = displayname
+        self.text = text
+        self.fav = fav
+        self.rt = rt
+
 
 # override tweepy.StreamListener to add logic to on_status
 class MyStreamListener(tweepy.StreamListener):
 
-    def MyStreamListener(self):
-        self.x = 0
+    def __init__(self):
+        super().__init__()
 
     def on_status(self, status):
-        print(dir(status))
-        print("Dir: ", dir(status.user))
-        print("URL ", status.user.profile_image_url)
-        print("Posted: ", status.created_at)
-        print("Username: ", status.user.screen_name)
-        print("Display: ", status.user.name)
-        print("Text: ", status.text)
-        print("FAV: ", status.favorite_count)
-        print("RT: ", status.retweet_count)
-
-        if status.text[0:2] == "RT":
-            print("Is RT")
-        else:
-            print("Not a RT")
+        global data
+        print("Received new")
+        if status.text[0:2] != "RT":
+            print("Received new not RT")
+            with open("../website/test.txt", "w") as f:
+                f.write(str(status.id))
+            data = StreamData(status.user.profile_image_url, status.created_at, status.user.screen_name,
+                              status.user.name, status.text, status.favorite_count, status.retweet_count)
 
     def on_error(self, status_code):
+        global data
         print("Error ", status_code)
+        data = None
         if status_code == 420:
             # returning False in on_data disconnects the stream
             return False
+
+
+def get_auth(i, keys):
+    auth = tweepy.OAuthHandler(keys[i]['consumer_key'], keys[i]['consumer_secret'])
+    auth.set_access_token(keys[i]['access_token'], keys[i]['access_token_secret'])
+    return [i + 1, tweepy.API(auth)]
 
 
 if __name__ == "__main__":
@@ -46,12 +62,11 @@ if __name__ == "__main__":
              "access_token": '868335170-gcttYgeFnQsklJaI7FC1uhvk78G9o9ha4gIcElSx',
              "access_token_secret": '4qfXmFZhlyYFDzpwIHBstTRpVt7O7hBPI2jUCjTnLc9M8'}]
 
-    auth = tweepy.OAuthHandler(keys[1]['consumer_key'], keys[1]['consumer_secret'])
-    auth.set_access_token(keys[1]['access_token'], keys[1]['access_token_secret'])
+    i = 1
 
-    api = tweepy.API(auth)
+    while True:
+        [i, api] = get_auth(i, keys)
+        myStreamListener = MyStreamListener()
 
-    myStreamListener = MyStreamListener()
-    myStream = tweepy.Stream(auth=api.auth, listener=myStreamListener)
-
-    myStream.filter(track=['python'])
+        myStream = tweepy.Stream(auth=api.auth, listener=myStreamListener)
+        myStream.filter(track=['#FelizFinde'])
