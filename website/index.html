@@ -18,28 +18,14 @@
                     {
                         var allText = rawFile.responseText;
                         var new_user = allText.split(",");
-                        console.log(users);
                         index = appendUser(users, index, new_user);
-                        console.log(users);
-                        renderUsers(users, index);
+                        //renderUsers(users, index);
                     }
                 }
             };
             rawFile.send(null);
         }
-
-        function appendUser(users, index, new_user) {
-            if(users.length == 0) {
-                users[0] = new_user;
-                index = index+1;
-            }
-            else if(new_user[1] != users[(index-1)%5][1]) {
-                users[index%5] = new_user;
-                index = index+1;
-            }
-            return index;
-        }
-
+        
         function renderUsers(users, index) {
             var user = '';
             for(i = 0; i < Math.min(index, 5); i++) {
@@ -47,6 +33,20 @@
             }
             document.getElementById('example').innerHTML=user;
         }
+
+        function appendUser(users, index, new_user) {
+            if(users.length == 0) {
+                users[0] = new_user;
+                index = index+1;
+                renderUsers(users, index);
+            }
+            else if(new_user[1] != users[(index-1)%5][1]) {
+                users[index%5] = new_user;
+                index = index+1;
+                renderUsers(users, index);
+            }
+            return index;            
+        }     
 
         function config() {
             var myVar = setInterval(function(){ readTextFile("test.txt"); }, 5000);
