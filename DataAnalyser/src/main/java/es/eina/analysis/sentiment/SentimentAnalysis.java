@@ -29,7 +29,6 @@ public class SentimentAnalysis {
                 String[] split = line.split("\t", 6);
                 if(split[0].isEmpty()){continue;}
 
-                System.out.println(Arrays.toString(split));
                 double posScore = Double.parseDouble(split[2]);
                 double negScore = Double.parseDouble(split[3]);
                 String[] word = split[4].split("#");
