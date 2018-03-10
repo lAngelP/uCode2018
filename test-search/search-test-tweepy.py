@@ -9,7 +9,10 @@ def generate_hashtags(baselist):
         one = baselist[base][0][1:]
         resp= requests.get(url=url+one)
         data= resp.json()
+        tmp = baselist[base]
         baselist[base] = ['#'+hashtag['tag'] for hashtag in data['results']][:4]
+        if len(baselist[base]) == 0:
+            baselist[base] = tmp
     return baselist
 
 def get_auth():
@@ -25,8 +28,7 @@ def get_auth():
     return ts
 
 
-def limit_handled(query, api, errors):
-    global keys
+def limit_handled(keys, query, api, errors):
 
     try:
         tso = TwitterSearchOrder()
@@ -40,8 +42,11 @@ def limit_handled(query, api, errors):
             if errors == len(keys):
                 print("MAX SHUTDOWN: Waiting 1 minute and retrying...")
                 sleep(60)
+                print("Retrying now!")
 
-            errors %= len(keys)
+            print(errors)
+            print(errors % len(keys))
+            errors = errors % len(keys)
             api = get_auth()
 
         return [errors, api, None]
@@ -66,10 +71,10 @@ if __name__ == "__main__":
              "access_token": '2274344732-eWTEjJO9eZQ2rzpWr9HeIWXflv2v2tKbgTcovk2',
              "access_token_secret": 'XMxK5l0nz2Yjhv2XWH16eyfXhjfcZx3nUKp84cxbfZxV2'},
 
-            {"consumer_key": '',  # Giorgi
-             "consumer_secret": '',
-             "access_token": '',
-             "access_token_secret": ''}]
+            {"consumer_key": '9M0kDfuRrz693qARlVL29CMBv',  # Giorgi
+             "consumer_secret": 'hzECvDbxin5YA4GCISRLTwwAfGDtzPtTNfY3nbl6ibeFqTelsu',
+             "access_token": '868335170-gcttYgeFnQsklJaI7FC1uhvk78G9o9ha4gIcElSx',
+             "access_token_secret": '4qfXmFZhlyYFDzpwIHBstTRpVt7O7hBPI2jUCjTnLc9M8'}]
     i = 0
     api = get_auth()
     errors = 0
@@ -85,22 +90,7 @@ if __name__ == "__main__":
     #             'BrooklynNets': ['#BrooklynGrit'], 'UtahJazz': ['#TakeNote'], 'ClevelandCavaliers': ['#DefendTheLand'],
     #             'WashingtonWizards': ['#DCFamily']})
 
-    hashlist = generate_hashtags({'Detroit': ['#DetroitBasketball'],
-                                  'Grizzlies': ['GrindCity'], 'Lakers': ['#LakeShow'],
-                                  'Sacramento': ['#SacramentoProud'],
-                                  'Bucks': ['#OwnTheFuture'], 'Philadelphia': ['#MADEinPHILA'],
-                                  'GSWarriors': ['#DubNation'],
-                                  'Charlotte': ['#BuzzCity'], 'DenverNuggets': ['#MileHighBasketball'],
-                                  'AtlantaHawks': ['#TrueToAtlanta'],
-                                  'DallasMavericks': ['#MFFL'], 'PhoenixSuns': ['#WeArePHX'],
-                                  'LAClippers': ['#ItTakesEverything'],
-                                  'MiamiHeats': ['#HEATisOn'], 'OrlandoMagic': ['#LetsGoMagic'],
-                                  'Celtics': ['#Celtics'],
-                                  'Rockets': ['#Rockets50'], 'Pacers': ['#GoPacers'], 'Pelicans': ['#Pelicans'],
-                                  'Knicks': ['#Knicks'],
-                                  'BrooklynNets': ['#BrooklynGrit'], 'UtahJazz': ['#TakeNote'],
-                                  'ClevelandCavaliers': ['#DefendTheLand'],
-                                  'WashingtonWizards': ['#DCFamily']})
+    hashlist = generate_hashtags({})
 
     hashkeys = list(hashlist.keys())
 
@@ -110,10 +100,10 @@ if __name__ == "__main__":
         file = hashkeys[x]
         with open("./data/NBA/" + file + ".json", "w+") as f:
             query_list = hashlist[file]
-            print("Perform " + " OR ".join(query_list))
+            print("Perform " + " OR ".join(query_list) + "(" + file + ")")
             raw_data = None
             while raw_data is None:
-                [errors, api, raw_data] = limit_handled(query_list, api, errors)
+                [errors, api, raw_data] = limit_handled(keys, query_list, api, errors)
 
             data = [x for x in raw_data]
             print("Retrieved " + str(len(data)) + " tweets for " + file)

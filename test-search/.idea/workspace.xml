@@ -11,13 +11,45 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="search-test-tweepy.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="search-test-tweepy.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/search-test-tweepy.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="595">
-              <caret line="71" column="37" lean-forward="false" selection-start-line="71" selection-start-column="37" selection-end-line="71" selection-end-column="37" />
+            <state relative-caret-position="465">
+              <caret line="92" column="34" lean-forward="false" selection-start-line="92" selection-start-column="34" selection-end-line="92" selection-end-column="34" />
               <folding>
                 <element signature="e#0#27#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="graphics.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/graphics.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="578">
+              <caret line="34" column="6" lean-forward="false" selection-start-line="34" selection-start-column="6" selection-end-line="34" selection-end-column="6" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="menu.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/MenuClass_V1.0.3/menu.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="261">
+              <caret line="688" column="64" lean-forward="false" selection-start-line="688" selection-start-column="64" selection-end-line="688" selection-end-column="64" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="example_simple.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/MenuClass_V1.0.3/example_simple.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="494">
+              <caret line="104" column="52" lean-forward="false" selection-start-line="104" selection-start-column="52" selection-end-line="104" selection-end-column="52" />
+              <folding>
+                <element signature="e#1820#1838#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -29,6 +61,9 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/search-test-tweepy.py" />
+        <option value="$PROJECT_DIR$/graphics.py" />
+        <option value="$PROJECT_DIR$/MenuClass_V1.0.3/menu.py" />
+        <option value="$PROJECT_DIR$/MenuClass_V1.0.3/example_simple.py" />
       </list>
     </option>
   </component>
@@ -66,6 +101,11 @@
             <path>
               <item name="test-search" type="b2602c69:ProjectViewProjectNode" />
               <item name="test-search" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="test-search" type="b2602c69:ProjectViewProjectNode" />
+              <item name="test-search" type="462c0819:PsiDirectoryNode" />
+              <item name="MenuClass_V1.0.3" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -144,10 +184,44 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/search-test-tweepy.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="595">
-          <caret line="71" column="37" lean-forward="false" selection-start-line="71" selection-start-column="37" selection-end-line="71" selection-end-column="37" />
+        <state relative-caret-position="465">
+          <caret line="92" column="34" lean-forward="false" selection-start-line="92" selection-start-column="34" selection-end-line="92" selection-end-column="34" />
           <folding>
             <element signature="e#0#27#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/graphics.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="578">
+          <caret line="34" column="6" lean-forward="false" selection-start-line="34" selection-start-column="6" selection-end-line="34" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MenuClass_V1.0.3/example.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2550">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MenuClass_V1.0.3/menu.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="261">
+          <caret line="688" column="64" lean-forward="false" selection-start-line="688" selection-start-column="64" selection-end-line="688" selection-end-column="64" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MenuClass_V1.0.3/example_simple.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="494">
+          <caret line="104" column="52" lean-forward="false" selection-start-line="104" selection-start-column="52" selection-end-line="104" selection-end-column="52" />
+          <folding>
+            <element signature="e#1820#1838#0" expanded="true" />
           </folding>
         </state>
       </provider>
