@@ -19,7 +19,7 @@ for hashtag in hashlist:
             tso.set_keywords(lista)
             number_tweets = 0
             for tweet in ts.search_tweets_iterable(tso):
-                if number_tweets > 1:
+                if number_tweets > 5:
                     break
                 else:
                     number_tweets += 1
