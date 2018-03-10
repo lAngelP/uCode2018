@@ -19,6 +19,7 @@ public class Main {
 
         parseDir();
 
+        /*return;
         ClassLoader classLoader = Main.class.getClassLoader();
         File f = new File(classLoader.getResource("NBA-Data/TOR.json").getFile());
         JSONArray array = Loader.loadData(f);
@@ -50,7 +51,7 @@ public class Main {
         System.out.println("Zero: " + zero + " -> " + (zero / total) + " %.");
         System.out.println("Total: " + total);
 
-        getAmount();
+        getAmount();*/
     }
 
     public static void getAmount() {
@@ -68,8 +69,9 @@ public class Main {
 
     public static void parseDir(){
         ClassLoader loader = Main.class.getClassLoader();
+        SentimentAnalysis sentiment = new SentimentAnalysis(getFile(loader, "lexicon.txt"));
         File dir = getFile(loader, "NBA-Data");
-        Parser.parseFiles(dir, new File("output"));
+        Parser.parseFiles(dir, new File("output"), sentiment);
     }
 
 }

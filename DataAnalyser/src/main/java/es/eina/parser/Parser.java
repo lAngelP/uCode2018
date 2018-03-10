@@ -1,18 +1,23 @@
 package es.eina.parser;
 
 import es.eina.Main;
+import es.eina.analysis.sentiment.SentimentAnalysis;
 import es.eina.loader.Loader;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONWriter;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 
 public class Parser {
+    private static final String key = "AIzaSyCdmrrnqlbT429pm_hi7LYIgmnyV_VS-YQ";
 
-    public static void parseFiles(File dir, File output){
+
+    public static void parseFiles(File dir, File output, SentimentAnalysis analysis){
         output.mkdirs();
         File[] files = dir.listFiles();
         for (File s : files){
@@ -22,6 +27,7 @@ public class Parser {
             JSONArray outArray = new JSONArray();
 
             for(int i = 0; i < object.length(); i++){
+                System.out.println("Parsing " + ((double)i / object.length()));
                 JSONObject result = new JSONObject();
                 JSONObject user = new JSONObject();
 
@@ -35,7 +41,7 @@ public class Parser {
                 user.put("id", userData.getInt("id"));
                 user.put("nick", userData.getString("name"));
                 user.put("name", userData.getString("screen_name"));
-                //user.put("location", TODO !!!)
+                user.put("location", performHTTP(userData.getString("location")));
                 user.put("description", userData.getString("description"));
                 user.put("followers", userData.getInt("followers_count"));
                 user.put("friends", userData.getInt("friends_count"));
@@ -49,6 +55,7 @@ public class Parser {
                 result.put("mentions", mentions);
                 result.put("urls", urls);
                 result.put("user", user);
+                result.put("sentient", analysis.analyse(obj.getString("text")));
 
                 outArray.put(result);
             }
@@ -74,6 +81,72 @@ public class Parser {
                 }
             }
         }
+    }
+
+    private static JSONObject performHTTP(String location) {
+        URL url;
+        try {
+            url = new URL("https://maps.googleapis.com/maps/api/geocode/json?address="+location.replace(" ", "+")+"&key=" + key);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return new JSONObject();
+        }
+        HttpURLConnection con;
+        try {
+            con = (HttpURLConnection) url.openConnection();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new JSONObject();
+        }
+        try {
+            con.setRequestMethod("GET");
+        } catch (ProtocolException e) {
+            e.printStackTrace();
+            return new JSONObject();
+        }
+
+        BufferedReader in = null;
+        try {
+            in = new BufferedReader(
+                    new InputStreamReader(con.getInputStream()));
+            String inputLine;
+            StringBuilder content = new StringBuilder();
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine);
+            }
+
+            return parseJSON(content.toString());
+        }catch(Exception ignored){
+        }finally{
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return new JSONObject();
+    }
+
+    private static String getIndex(JSONArray address, int index){
+        return address.getJSONObject(index).getString("long_name");
+    }
+
+    private static JSONObject parseJSON(String s) {
+        JSONObject object = new JSONObject(s);
+        JSONObject result = new JSONObject();
+
+        JSONObject searchResult = object.getJSONArray("results").getJSONObject(0);
+        JSONObject latlong = searchResult.getJSONObject("geometry").getJSONObject("bounds").getJSONObject("northeast");
+        JSONArray address = searchResult.getJSONArray("address_components");
+
+        result.put("lat", latlong.getDouble("lat"));
+        result.put("long", latlong.getDouble("lng"));
+        result.put("location", getIndex(address,0) + "," + getIndex(address,1) + "," + getIndex(address,3) + "," + getIndex(address,4) + "," + getIndex(address,5) + "," + getIndex(address,6) + "," + getIndex(address,7));
+
+        return result;
     }
 
     private static JSONArray loadValue(JSONArray base, String obtain){
