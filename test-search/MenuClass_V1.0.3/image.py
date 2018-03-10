@@ -12,9 +12,9 @@ def load_image(file_name, folder, colorkey = None):
    full_name = os.path.join(folder, file_name)
    try:
       image = pygame.image.load(full_name)
-   except pygame.error, message:
-      print 'Cannot load image:', full_name
-      raise SystemExit, message
+   except (pygame.error, message):
+      print ('Cannot load image:', full_name)
+      raise (SystemExit, message)
    image = image.convert_alpha()
    if colorkey is not None:
       if colorkey is -1:

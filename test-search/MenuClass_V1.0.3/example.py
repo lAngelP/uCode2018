@@ -250,32 +250,32 @@ def main():
                          random.choice(RGB_available_colors),
                          random.choice(RGB_available_colors))
             menu3.set_unselected_color(new_color)
-            print 'New Unselected Color = ', new_color
+            print ('New Unselected Color = ', new_color)
 
             new_color = (random.choice(RGB_available_colors),
                          random.choice(RGB_available_colors),
                          random.choice(RGB_available_colors))
             menu3.set_selected_color(new_color)
-            print 'New Selected Color = ', new_color
+            print ('New Selected Color = ', new_color)
 
             new_color = (random.choice(RGB_available_colors),
                          random.choice(RGB_available_colors),
                          random.choice(RGB_available_colors))
             menu3.set_image_highlight_color(new_color)
-            print 'New Image Highlight Color = ', new_color
+            print ('New Image Highlight Color = ', new_color)
 
-            print ' '
+            print (' ')
             state = 3
          elif state == 8:
             new_thickness = random.choice((1, 2, 3, 4, 5, 6, 7, 8))
             menu3.set_image_highlight_thickness(new_thickness)
-            print 'New Image Highlight Thickness = ', new_thickness
+            print ('New Image Highlight Thickness = ', new_thickness)
 
             new_h_pad = random.choice(xrange(0, 20))
             new_v_pad = random.choice(xrange(0, 20))
             menu3.set_padding(new_h_pad, new_v_pad)
-            print 'New Horizontal Padding = ', new_h_pad
-            print 'New Vertical Padding = ', new_v_pad
+            print ('New Horizontal Padding = ', new_h_pad)
+            print ('New Vertical Padding = ', new_v_pad)
 
             new_orientation = random.choice(('vertical', 'horizontal'))
             menu3.set_orientation(new_orientation)
@@ -283,19 +283,19 @@ def main():
                new_change_number = random.choice(xrange(5, 12))
             elif new_orientation == 'horizontal':
                new_change_number = random.choice(xrange(2, 5))
-            print 'New Orientation = ', new_orientation
+            print ('New Orientation = ', new_orientation)
 
             menu3.set_change_number(new_change_number)
-            print 'New Change Number = ', new_change_number
+            print ('New Change Number = ', new_change_number)
 
             new_v_alignment = random.choice(('top', 'center', 'bottom'))
             new_h_alignment = random.choice(('left', 'center', 'right'))
             menu3.set_alignment(new_v_alignment, new_h_alignment)
-            print 'New Vertical Alignment = ',   new_v_alignment
-            print 'New Horizontal Alignment = ', new_h_alignment
+            print ('New Vertical Alignment = ',   new_v_alignment)
+            print ('New Horizontal Alignment = ', new_h_alignment)
 
 
-            print ' '
+            print (' ')
             state = 3
          else:
             pygame.quit()
