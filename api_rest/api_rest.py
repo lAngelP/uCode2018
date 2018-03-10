@@ -15,10 +15,10 @@ def load_template(name):
 # Returns the HTML code to generate a heatmap
 @app.route('/heatmap/')
 def hello_a():
-    data = json.loads(load_file("BKN.json"))["data"]
-    locations = filter(lambda x: len(x) > 0, [data2["user"]["location"] for data2 in data])
+    data = json.loads(load_file("ATL.json"))["data"]
+    locations = list(filter(lambda x: len(x) > 0, [data2["user"]["location"] for data2 in data]))
     print(locations)
-    coords = [(locs['lat'], locs['long']) for locs in locations[:100]]
+    coords = [(locs['lat'], locs['long']) for locs in locations]
     print(coords)
     # coords = [(37.782551, -122.445368), (37.782745, -122.444586), (37.782842, -122.443688),
     #           (37.782919, -122.442815), (37.783100, -122.441461)]
