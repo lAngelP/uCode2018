@@ -1,0 +1,4 @@
+es\eina\parser\Parser.class
+es\eina\Main.class
+es\eina\loader\Loader.class
+es\eina\analysis\sentiment\SentimentAnalysis.class
