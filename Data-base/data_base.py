@@ -132,7 +132,8 @@ def load_data(path, db):
     like = data["team"].split('.')[0]
     print(like)
     for user in data["data"]:
-        location = user["user"]["location"]
+        lat = user["user"]["location"]["lat"]
+        long = user["user"]["location"]["long"]
         nick = user["user"]["name"]
         name = user["user"]["nick"]
         profile_img = user["user"]["profile_img"]
@@ -142,9 +143,9 @@ def load_data(path, db):
         sentient = user["sentient"]
         persona_id = insert_Persona(db, nick, name, profile_img, followers, friends)
         #print(persona_id)
-        if location != {}:
-            location_id = insert_Localizacion(db,location)
-            insert_Localizacion_persona(db,[location_id['_id']],persona_id['_id'])
+        if lat != {} and long != {}:
+            location_id = insert_Localizacion(db, lat, long)
+            insert_Localizacion_persona(db, [location_id['_id']], persona_id['_id'])
 
         gusto_id = insertar_gusto(db,like,hashtag)
         #print(gusto_id)
@@ -154,8 +155,8 @@ def insert_location_from_data(path, db):
     with open(path, 'r', encoding="utf8") as file:
         data = json.load(file)
     for user in data["data"]:
-        lat = user["location"]["lat"]
-        long = user["location"]["long"]
+        lat = user["user"]["location"]["lat"]
+        long = user["user"]["location"]["long"]
         nick = user["user"]["name"]
         user_id = db.personas.find_one({"nick": nick})
         location_id = insert_Localizacion(db, lat, long)
