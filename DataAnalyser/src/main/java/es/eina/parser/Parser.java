@@ -8,13 +8,11 @@ import org.json.JSONObject;
 import org.json.JSONWriter;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
+import java.net.*;
 
 public class Parser {
-    private static final String key = "AIzaSyCdmrrnqlbT429pm_hi7LYIgmnyV_VS-YQ";
+    //private static final String key = "AIzaSyCdmrrnqlbT429pm_hi7LYIgmnyV_VS-YQ";
+    private static final String key = "AIzaSyCyQ9rdMWrrTDMzXI8_XD3i_-57qU4-bNg";
 
 
     public static void parseFiles(File dir, File output, SentimentAnalysis analysis){
@@ -84,10 +82,12 @@ public class Parser {
     }
 
     private static JSONObject performHTTP(String location) {
+        if(location == null || location.isEmpty()) return new JSONObject();
+
         URL url;
         try {
-            url = new URL("https://maps.googleapis.com/maps/api/geocode/json?address="+location.replace(" ", "+")+"&key=" + key);
-        } catch (MalformedURLException e) {
+            url = new URL("https://maps.googleapis.com/maps/api/geocode/json?address="+URLEncoder.encode(location, "UTF-8")+"&key=" + key);
+        } catch (MalformedURLException | UnsupportedEncodingException e) {
             e.printStackTrace();
             return new JSONObject();
         }
@@ -116,7 +116,8 @@ public class Parser {
             }
 
             return parseJSON(content.toString());
-        }catch(Exception ignored){
+        }catch(Exception ex){
+            ex.printStackTrace();
         }finally{
             try {
                 if (in != null) {
@@ -138,13 +139,14 @@ public class Parser {
         JSONObject object = new JSONObject(s);
         JSONObject result = new JSONObject();
 
+
         JSONObject searchResult = object.getJSONArray("results").getJSONObject(0);
         JSONObject latlong = searchResult.getJSONObject("geometry").getJSONObject("bounds").getJSONObject("northeast");
         JSONArray address = searchResult.getJSONArray("address_components");
 
         result.put("lat", latlong.getDouble("lat"));
         result.put("long", latlong.getDouble("lng"));
-        result.put("location", getIndex(address,0) + "," + getIndex(address,1) + "," + getIndex(address,3) + "," + getIndex(address,4) + "," + getIndex(address,5) + "," + getIndex(address,6) + "," + getIndex(address,7));
+        //result.put("location", getIndex(address,0) + "," + getIndex(address,1) + "," + getIndex(address,3) + "," + getIndex(address,4) + "," + getIndex(address,5) + "," + getIndex(address,6) + "," + getIndex(address,7));
 
         return result;
     }
