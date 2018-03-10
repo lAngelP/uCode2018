@@ -5,26 +5,15 @@ def connect():
     db = client.ucode2018
     return db
 
-
-
-
-
-def insertar_tweet(tweet, db):
-    location = 'test_location'
-    nick = 'test_nick'
-    name = 'test_name'
-    image = 'test_url'
-    like = 'test_like'
-    hashtags = ['hashtag1', 'hashtag2']
-
+def insertPerson_Localization(db, location, nick, name):
     location_id = db.lugares.find_one_and_update(
         {"sitio": location},
         {"$set": {"sitio": location}},
         upsert=True, returnNewDocument=True
     )
-    persona_id = db.persona.find_one_and_update(
+    persona_id = db.personas.find_one_and_update(
         {"nick": nick},
-        {"$set":{
+        {"$set": {
             "nick": nick,
             "name": name,
             "location": str(location_id['_id'])}},
@@ -35,7 +24,10 @@ def insertar_tweet(tweet, db):
         {"$addToSet": {
             "population": nick}},
     )
-    gusto_id = db.persona.find_one_and_update(
+    return location_id, persona_id
+
+def insertar_gusto(db, like, hashtags, persona_id):
+    gusto_id = db.gusto.find_one_and_update(
         {"name": like},
         {"$addToSet": {
             'hashtags': hashtags,
@@ -44,13 +36,62 @@ def insertar_tweet(tweet, db):
             "name": like}},
         upsert=True, returnNewDocument=True
     )
+    return gusto_id
 
-def insertar
+def insertar_evento(db, event, persona_id, gusto_id,date, lugar_id):
 
+    evento_id = db.eventos.find_one_and_update(
+        {"name": event},
+        {"$addToSet": {
+            'people': str(persona_id['_id']),
+            'like': [str(gusto['_id']) for gusto in gusto_id]},
+            "$set": {
+                "name": event,
+                "date": date,
+                "lugar": str(lugar_id['_id'])}},
+        upsert=True, returnNewDocument=True
+    )
+    db.localizacion.update(
+        {"_id": str(lugar_id['_id'])},
+        {"$addToSet": {
+            "events": str(evento_id['_id'])}},
+    )
+    db.personas.update(
+        {"_id": str(persona_id['_id'])},
+        {"$addToSet": {
+            "events": str(evento_id['_id'])}},
+    )
+    for gusto in gusto_id:
+        print(gusto)
+        db.gustos.update(
+            {"_id": str(gusto['_id'])},
+            {"$addToSet": {
+                "events": str(evento_id['_id'])}},
+        )
+    return evento_id
+
+def add_imagen(db, img, gusto_id):
+    gusto_id = db.gusto.update(
+        {"_id": gusto_id},
+        {"$addToSet": {
+            'img': img}},
+        upsert=True)
+def add_tweet_id(db,id):
+    db.twitter_id.insert_one({'tweet':id})
 
 if __name__ == "__main__":
     db = connect()
     with open('../test-search/data/NBA/BrooklynNets.json', 'r') as file:
         data = json.load(file)
-    for file in data:
-        insertar_tweet(file, db)
+    location = 'testing_location'
+    nick = 'testing_nick'
+    name = 'testing_name'
+    like = 'testing_gusto'
+    date = '20181102'
+    event = 'test_event'
+    id = 'id_test'
+    hashtag = ['#hashtag', '#hash2']
+    location, persona = insertPerson_Localization(db,location, nick, name)
+    gusto = insertar_gusto(db, like, hashtag, persona)
+    insertar_evento(db,event,persona, [gusto] ,date, location)
+    add_tweet_id(db,id)
