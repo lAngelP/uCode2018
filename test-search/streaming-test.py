@@ -27,7 +27,7 @@ class MyStreamListener(tweepy.StreamListener):
         if status.text[0:2] != "RT":
             print("Received new not RT")
             with open("../website/test.txt", "w") as f:
-                f.write(str(status.id))
+                f.write(str(status.user.screen_name)+","+str(status.id))
             data = StreamData(status.user.profile_image_url, status.created_at, status.user.screen_name,
                               status.user.name, status.text, status.favorite_count, status.retweet_count)
 
