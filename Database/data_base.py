@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 import os
 import json
+import time
 def connect():
     client = MongoClient('mongodb://root:toor@localhost:27017/')
     db = client.ucode2018
@@ -78,18 +79,20 @@ def insertar_persona_gusto(db, gusto_id, persona_id, sentient):
     )
 
 
-def insertar_evento(db, event, gusto_ids,date, lugar_id):
-
-    evento_id = db.eventos.find_and_modify(
-        {"name": event},
-        {"$addToSet": {
-            'like': {"$each": [gusto_ids]}},
-            "$set": {
-                "name": event,
-                "date": date,
-                "lugar": lugar_id}},
-        upsert=True, returnNewDocument=True
-    )
+def insertar_evento(event, gusto_ids, date, lugar_id):
+    global db
+    evento_id = None
+    while evento_id is not None:
+        evento_id = db.eventos.find_and_modify(
+            {"name": event},
+            {"$addToSet": {
+                'like': {"$each": [gusto_ids]}},
+                "$set": {
+                    "name": event,
+                    "date": date,
+                    "lugar": lugar_id}},
+            upsert=True, returnNewDocument=True
+        )
     db.localizacion.update(
         {"_id": lugar_id},
         {"$addToSet": {
@@ -102,7 +105,13 @@ def insertar_evento(db, event, gusto_ids,date, lugar_id):
             {"$addToSet": {
                 "events": {"$each":[evento_id]}}},
         )
-    return evento_id
+    return evento_id["_id"]
+
+def insertar_tweet_evento(persona, evento_id):
+    global db
+    nick, name, profile_img, followers, friends = persona
+    persona_id = insert_Persona(db, nick, name, profile_img, followers, friends)
+    add_persona_evento(db, persona_id["_id"], evento_id)
 
 def add_persona_evento(db, persona_id, evento_id):
     db.eventos.update(
@@ -126,13 +135,13 @@ def add_imagen(db, img, gusto_id):
         upsert=True)
 
 
+
 def load_data(path, db):
     with open(path, 'r', encoding="utf8") as file:
         data = json.load(file)
     like = data["team"].split('.')[0]
     print(like)
     for user in data["data"]:
-
         nick = user["user"]["name"]
         name = user["user"]["nick"]
         profile_img = user["user"]["profile_img"]
@@ -163,8 +172,27 @@ def insert_location_from_data(path, db):
         location_id = insert_Localizacion(db, lat, long)
         insert_Localizacion_persona(db, [location_id['_id']], user_id['_id'])
 
-if __name__ == "__main__":
+def load_matches(path, db):
+    with open(path, 'r', encoding="utf8") as file:
+        data = json.load(file)
+    for team in data:
+        away = team["Away_team"]
+        home = team["Home_team"]
+        lat = team["Location"]["lat"]
+        long = team["Location"]["long"]
+        date = team["Date"]
+        home_id = db.gusto.find_one({"name": home})
+        visit_id = db.gusto.find_one({"name": away})
+        location_id = insert_Localizacion(db, lat,long)
+        insertar_evento(away+'vs'+home,[home_id, visit_id],date,location_id)
+
+def main():
+    global db
     db = connect()
-    files = os.listdir('..\\DataAnalyser\\output\\')
-    for file in files:
-        load_data('../DataAnalyser/output/'+file, db)
+    while True:
+    #load_matches('../results.json', db)
+        files = os.listdir('..\\DataAnalyser\\output\\')
+        for file in files:
+            load_data('../DataAnalyser/output/'+file, db)
+            os.rename('../DataAnalyser/output/'+file, 'Data/'+file)
+        time.sleep(300)

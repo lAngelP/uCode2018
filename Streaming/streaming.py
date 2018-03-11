@@ -1,5 +1,8 @@
+import sys
+sys.path.append("../")
 import tweepy
 from time import time, sleep
+from Database.data_base import *
 
 class StreamData:
     def __init__(self, id_tweet, url, posted_at, username, displayname, text, fav, rt):
@@ -26,8 +29,12 @@ class MyStreamListener(tweepy.StreamListener):
     def on_status(self, status):
         global tfinal
         global myStream
+        global evento
+        insertar_tweet_evento([status.user.screen_name, status.user.name, status.user.profile_background_image_url, status.user.followers_count,
+                status.user.friends_count], evento)
         if status.text[0:2] != "RT":
             print("Received Tweet")
+            
             with open("../website/data/test.txt", "w") as f:
                 f.write(str(status.user.screen_name)+","+str(status.id))
             
@@ -44,7 +51,6 @@ class MyStreamListener(tweepy.StreamListener):
             # returning False in on_data disconnects the stream
             return False
 
-
 def get_auth(i, keys):
     auth = tweepy.OAuthHandler(keys[i]['consumer_key'], keys[i]['consumer_secret'])
     auth.set_access_token(keys[i]['access_token'], keys[i]['access_token_secret'])
@@ -52,8 +58,11 @@ def get_auth(i, keys):
 
 
 def start_streaming(hashtag, nombre, equipos, fecha, lugar, tinicio, duracion):
+    global evento 
+    evento = insertar_evento(evento, equipos, fecha, lugar)
     global tfinal
     global myStream
+    #insertar_evento()
     print("esperando "+ str(tinicio-time())+" segundos")
     #Esperar tiempo de inicio
     sleep(tinicio-time())
@@ -75,6 +84,7 @@ def start_streaming(hashtag, nombre, equipos, fecha, lugar, tinicio, duracion):
     i = 1
     print("Comenzando")
     tfinal = tinicio+duracion
+    
     while time()<tinicio+duracion:
         [i, api] = get_auth(i, keys)
         myStreamListener = MyStreamListener()
@@ -82,3 +92,5 @@ def start_streaming(hashtag, nombre, equipos, fecha, lugar, tinicio, duracion):
         myStream = tweepy.Stream(auth=api.auth, listener=myStreamListener)
         myStream.filter(track=[hashtag])
         print(tinicio+duracion-time())
+    
+
