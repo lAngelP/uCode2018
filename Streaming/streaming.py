@@ -1,8 +1,9 @@
-import sys
-sys.path.append("../")
+#import sys
+#sys.path.append("../")
 import tweepy
-from time import time, sleep
-from Database.data_base import *
+import time
+from time import sleep
+#from Database.data_base import *
 
 class StreamData:
     def __init__(self, id_tweet, url, posted_at, username, displayname, text, fav, rt):
