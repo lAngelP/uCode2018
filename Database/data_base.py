@@ -71,16 +71,15 @@ def insertar_gusto(db, like, hashtags):
 def insertar_persona_gusto(db, gusto_id, persona_id, sentient):
     db.gustos.update(
         {"_id": gusto_id},
-        {"$push": {
-            "people": persona_id}}
+        {"$addToSet": {
+            "$set":{"people": persona_id}}}
     )
     result = db.personas.find_one({"_id": persona_id})
 
     db.personas.update(
         {"_id": persona_id},
         {"$addToSet": {
-            "sentient": result['sentinent']+sentient,
-            "like": gusto_id}}
+            "%set":{"sentinent": result['sentinent']+sentient, "like": gusto_id}}}
     )
 
 
@@ -200,3 +199,7 @@ def main():
             load_data('../DataAnalyser/output/'+file, db)
             os.rename('../DataAnalyser/output/'+file, 'Data/'+file)
         time.sleep(300)
+
+
+if __name__ == '__main__':
+    main()
