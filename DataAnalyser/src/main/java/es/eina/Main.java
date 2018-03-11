@@ -1,5 +1,6 @@
 package es.eina;
 
+import es.eina.analysis.apriori.AprioriAnalysis;
 import es.eina.analysis.sentiment.SentimentAnalysis;
 import es.eina.loader.Loader;
 import es.eina.parser.Parser;
@@ -16,8 +17,8 @@ public class Main {
     }
 
     public static void main(String[] args) {
-
-        parseDir();
+        AprioriAnalysis.analyze();
+        //parseDir();
 
         /*return;
         ClassLoader classLoader = Main.class.getClassLoader();
