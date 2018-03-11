@@ -29,9 +29,9 @@ class MyStreamListener(tweepy.StreamListener):
     def on_status(self, status):
         global tfinal
         global myStream
-        global evento
-        insertar_tweet_evento([status.user.screen_name, status.user.name, status.user.profile_background_image_url, status.user.followers_count,
-                status.user.friends_count], evento)
+        #global evento
+        #insertar_tweet_evento([status.user.screen_name, status.user.name, status.user.profile_background_image_url, status.user.followers_count,
+        #        status.user.friends_count], evento)
         if status.text[0:2] != "RT":
             print("Received Tweet")
             
@@ -58,8 +58,8 @@ def get_auth(i, keys):
 
 
 def start_streaming(hashtag, nombre, equipos, fecha, lugar, tinicio, duracion):
-    global evento 
-    evento = insertar_evento(nombre, equipos, fecha, lugar)
+    #global evento 
+    #evento = insertar_evento(nombre, equipos, fecha, lugar)
     global tfinal
     global myStream
     #insertar_evento()
