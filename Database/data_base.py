@@ -78,7 +78,7 @@ def insertar_persona_gusto(db, gusto_id, persona_id, sentient):
     )
 
 
-def insertar_evento(event, gusto_ids,date, lugar_id):
+def insertar_evento(event, gusto_ids, date, lugar_id):
     db = connect()
 
     evento_id = db.eventos.find_and_modify(
