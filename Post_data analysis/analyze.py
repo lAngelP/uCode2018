@@ -5,14 +5,38 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import matplotlib.path as path
 import os
+import json
+import matplotlib
 
-files = None
+fileArray = None
 for root, dirs, files in os.walk("../DataAnalyser/output/"):
-    files = filter(lambda file: file.endswith(".json"), files)
+    fileArray = list(filter(lambda file: file.endswith(".json"), files))
+
+labels = []
+meanSent = []
+
+for file in fileArray:
+    object = json.load(open("../DataAnalyser/output/" + file, "r", encoding="UTF-8"))['data']
+    X1 = [[obj['user']['followers'], obj['sentient']] for obj in object]
+
+    X = [np.log10(x) for [x, y] in X1]
+    y = [y for [x, y] in X1]
+    meanSent = meanSent + [np.mean(y)]
+    labels = labels + [file]
+
+    matplotlib.rcParams['axes.unicode_minus'] = False
+    fig, ax = plt.subplots()
+    ax.plot(X, y, 'rx')
+    ax.set_title('Followers of ' + file + " by sentient data.")
+    plt.xlabel("Seguidors (en escala logarítmica)")
+    plt.ylabel("Resultado análisis semántico")
+    plt.show()
+
+# Fixing random state for reproducibility
+np.random.seed(19680801)
 
 
 
-exit(0)
 fig, ax = plt.subplots()
 
 # Fixing random state for reproducibility
@@ -20,9 +44,7 @@ np.random.seed(19680801)
 
 
 # histogram our data with numpy
-
-data = np.random.randn(1000)
-n, bins = np.histogram(data, 50)
+n, bins = np.histogram(meanSent, 50)
 
 # get the corners of the rectangles for the histogram
 left = np.array(bins[:-1])
