@@ -2,11 +2,16 @@ from pymongo import MongoClient
 import os
 import json
 import time
+
+
+
 def connect():
-    client = MongoClient('mongodb://root:toor@localhost:27017/')
+    client = MongoClient('mongodb://root:toor@10.3.11.169:27017/')
     db = client.ucode2018
     return db
 
+global db
+db = connect()
 
 def insert_Localizacion(db, lat, long):
     location_id = None
@@ -82,7 +87,7 @@ def insertar_persona_gusto(db, gusto_id, persona_id, sentient):
 def insertar_evento(event, gusto_ids, date, lugar_id):
     global db
     evento_id = None
-    while evento_id is not None:
+    while evento_id is None:
         evento_id = db.eventos.find_and_modify(
             {"name": event},
             {"$addToSet": {
@@ -187,8 +192,7 @@ def load_matches(path, db):
         insertar_evento(away+'vs'+home,[home_id, visit_id],date,location_id)
 
 def main():
-    global db
-    db = connect()
+    
     while True:
     #load_matches('../results.json', db)
         files = os.listdir('..\\DataAnalyser\\output\\')
