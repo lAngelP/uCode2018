@@ -54,6 +54,7 @@ def get_auth(i, keys):
 def start_streaming(hashtag, nombre, equipos, fecha, lugar, tinicio, duracion):
     global tfinal
     global myStream
+    insertar_evento()
     print("esperando "+ str(tinicio-time())+" segundos")
     #Esperar tiempo de inicio
     sleep(tinicio-time())

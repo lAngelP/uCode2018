@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, abort
 import json
 import codecs
 
@@ -14,7 +14,7 @@ def load_template(name):
 
 # Returns the HTML code to generate a heatmap
 @app.route('/heatmap/')
-def hello_a():
+def heatmap():
     data = json.loads(load_file("ATL.json"))["data"]
     locations = list(filter(lambda x: len(x) > 0, [data2["user"]["location"] for data2 in data]))
     print(locations)
@@ -26,7 +26,6 @@ def hello_a():
 
     template = load_template("heatmap")
     return template.replace("{{COORDINATES}}", parsed_coords)
-
 
 #new google.maps.LatLng(37.782551, -122.445368)
 
