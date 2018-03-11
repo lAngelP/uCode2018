@@ -165,6 +165,8 @@ def insert_location_from_data(path, db):
         location_id = insert_Localizacion(db, lat, long)
         insert_Localizacion_persona(db, [location_id['_id']], user_id['_id'])
 
+def
+
 if __name__ == "__main__":
     db = connect()
     files = os.listdir('..\\DataAnalyser\\output\\')
