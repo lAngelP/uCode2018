@@ -1,13 +1,14 @@
 from pymongo import MongoClient
-import os
-import json
-import time
+
 def connect():
     client = MongoClient('mongodb://root:toor@localhost:27017/')
     db = client.ucode2018
     return db
 
-def find_best(teamn_id):
+def find_best(team, db=None):
+    if not db:
+        db = connect()
+    gusto_id = db.gusto.find_one({'name': team})
     results = db.personas.find({'%set.like': gusto_id["_id"]})
     results = [result for result in results]
     dic = {}
@@ -22,9 +23,5 @@ def find_best(teamn_id):
 
 if __name__ == '__main__':
     db = connect()
-    gusto_id = db.gusto.find_one({'name':'LAL'})
-    print('LAL')
-    print(find_best(gusto_id))
-    gusto_id = db.gusto.find_one({'name': 'DEN'})
-    print('DEN')
-    print(find_best(gusto_id))
+    print(find_best('LAL'),db)
+    print(find_best('DEN'),db)
