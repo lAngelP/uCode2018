@@ -41,7 +41,7 @@ class MyStreamListener(tweepy.StreamListener):
         else:
             print("Received Retweet")
         #print(time()-tfinal)
-        if time()>tfinal:
+        if time.time()>tfinal:
             myStream.disconnect()
 
     def on_error(self, status_code):
@@ -59,13 +59,13 @@ def get_auth(i, keys):
 
 def start_streaming(hashtag, nombre, equipos, fecha, lugar, tinicio, duracion):
     global evento 
-    evento = insertar_evento(evento, equipos, fecha, lugar)
+    evento = insertar_evento(nombre, equipos, fecha, lugar)
     global tfinal
     global myStream
     #insertar_evento()
-    print("esperando "+ str(tinicio-time())+" segundos")
+    print("esperando "+ str(tinicio-time.time())+" segundos")
     #Esperar tiempo de inicio
-    sleep(tinicio-time())
+    sleep(tinicio-time.time())
     keys = [{"consumer_key": 'nRg8SIso25KTnYE0Yn1tec2zb',  # Jorpilo
              "consumer_secret": 's26emswOPnExmaYjhgRUwKzRo84HnISBWJbCm4zUPbAnDJoIzZ',
              "access_token": '2510636970-HjkdkkXeT7syJ0pZ9xPbr3kILTF3sUaq7l5JU4I',
@@ -85,12 +85,12 @@ def start_streaming(hashtag, nombre, equipos, fecha, lugar, tinicio, duracion):
     print("Comenzando")
     tfinal = tinicio+duracion
     
-    while time()<tinicio+duracion:
+    while time.time()<tinicio+duracion:
         [i, api] = get_auth(i, keys)
         myStreamListener = MyStreamListener()
 
         myStream = tweepy.Stream(auth=api.auth, listener=myStreamListener)
         myStream.filter(track=[hashtag])
-        print(tinicio+duracion-time())
+        print(tinicio+duracion-time.time())
     
 
