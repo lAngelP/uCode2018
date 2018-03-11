@@ -1,6 +1,8 @@
+import sys
+sys.path.append("../")
 import tweepy
 from time import time, sleep
-from Database.data_base import 
+from Database.data_base import *
 
 class StreamData:
     def __init__(self, id_tweet, url, posted_at, username, displayname, text, fav, rt):
@@ -28,9 +30,8 @@ class MyStreamListener(tweepy.StreamListener):
         global tfinal
         global myStream
         global evento
-        #add_user
-        print(status.user.screen_name, status.user.name, status.user.profile_background_image_url, status.user.followers_count,
-                status.user.friends_count, status.entities['hashtags'])
+        insertar_tweet_evento([status.user.screen_name, status.user.name, status.user.profile_background_image_url, status.user.followers_count,
+                status.user.friends_count], evento)
         if status.text[0:2] != "RT":
             print("Received Tweet")
             

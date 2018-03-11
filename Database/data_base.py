@@ -109,11 +109,7 @@ def insertar_evento(event, gusto_ids, date, lugar_id):
 
 def insertar_tweet_evento(persona, evento_id):
     global db
-    nick = user["user"]["name"]
-    name = user["user"]["nick"]
-    profile_img = user["user"]["profile_img"]
-    followers = user["user"]["followers"]
-    friends = user["user"]["friends"]
+    nick, name, profile_img, followers, friends = persona
     persona_id = insert_Persona(db, nick, name, profile_img, followers, friends)
     add_persona_evento(db, persona_id["_id"], evento_id)
 
